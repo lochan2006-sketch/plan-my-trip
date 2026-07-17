@@ -1,19 +1,37 @@
+import Header from "@/components/layout/Header";
+import Hero from "@/components/home/Hero";
+import TripPlannerForm from "@/components/planner/TripPlannerForm";
+import TripResult from "@/components/TripResult";
+import Features from "@/components/home/Features";
+import Footer from "@/components/layout/Footer";
+
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
-      <section className="mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-6 text-center">
-        <h1 className="mb-6 text-5xl font-bold text-gray-900">
-          PlanMyTrip
-        </h1>
+      <Header />
 
-        <p className="mb-8 max-w-2xl text-lg text-gray-600">
-          Plan affordable trips with your friends in under 2 minutes using AI.
-        </p>
+      <Hero />
 
-        <button className="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700">
-          Start Planning
-        </button>
-      </section>
+      <div className="px-6 pb-20">
+        <TripPlannerForm />
+
+        <TripResult
+          destination="Jaipur"
+          budget="₹4,800 per person"
+          transport="Train"
+          hotel="Zostel Jaipur"
+          itinerary={[
+            "Day 1 – City Palace, Hawa Mahal",
+            "Day 2 – Amber Fort, Nahargarh Fort",
+            "Day 3 – Shopping & Return Journey",
+          ]}
+        />
+      </div>
+
+      <Features />
+
+      <Footer />
     </main>
   );
 }
