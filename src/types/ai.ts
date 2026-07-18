@@ -9,8 +9,11 @@ export interface Hotel {
 }
 
 export interface TripResponse {
+  startingCity: string;
   destination: string;
   budget: string;
+  travelers: number;
+  days: number;
   transport: string;
   hotel: Hotel;
   itinerary: ItineraryDay[];

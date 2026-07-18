@@ -7,6 +7,7 @@ import TripMode from "./TripMode";
 import TripDetails from "./TripDetails";
 import TripPreferences from "./TripPreferences";
 import SubmitButton from "./SubmitButton";
+import { useTripStore } from "@/store/tripStore";
 
 import Card from "../ui/Card";
 import Alert from "../ui/Alert";
@@ -15,6 +16,7 @@ import { validateTripForm } from "@/lib/validation";
 
 export default function TripPlannerForm() {
   const router = useRouter();
+  const { setTrip } = useTripStore();
 
   const [tripMode, setTripMode] = useState<"known" | "suggest">("known");
 
@@ -75,20 +77,12 @@ export default function TripPlannerForm() {
         setError(data.message || "Failed to generate trip.");
         return;
       }
+     
+      // Save trip in Zustand
+     setTrip(data.result);
 
-      // We'll replace this with real AI data later
-      const params = new URLSearchParams({
-        startingCity: formData.startingCity,
-        destination:
-          tripMode === "known"
-            ? formData.destination
-            : "AI Suggested Destination",
-        budget: formData.budget,
-        travelers: formData.travelers,
-        days: formData.days,
-      });
-
-      router.push(`/trip?${params.toString()}`);
+     // Navigate to results page
+     router.push("/trip");
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
