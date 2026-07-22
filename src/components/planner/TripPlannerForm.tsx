@@ -33,8 +33,17 @@ export default function TripPlannerForm() {
 
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  type SuggestedDestination = {
+    name: string;
+    image: string;
+    rating: number;
+    budgetRange: string;
+    bestFor: string;
+    bestSeason: string;
+  };
+
   const [suggestions, setSuggestions] = useState<
-    { name: string }[]
+    SuggestedDestination[]
   >([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,48 +56,48 @@ export default function TripPlannerForm() {
   };
 
   const handleDestinationSelect = async (
-  destination: string
-) => {
-  setSuggestions([]);
+    destination: string
+  ) => {
+    setSuggestions([]);
 
-  const updatedForm = {
-    ...formData,
-    destination,
-  };
+    const updatedForm = {
+      ...formData,
+      destination,
+    };
 
-  setFormData(updatedForm);
-  setTripMode("known");
+    setFormData(updatedForm);
+    setTripMode("known");
 
-  setIsSubmitting(true);
+    setIsSubmitting(true);
 
-  try {
-    const response = await fetch("/api/generate-trip", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        formData: updatedForm,
-        tripMode: "known",
-      }),
-    });
+    try {
+      const response = await fetch("/api/generate-trip", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          formData: updatedForm,
+          tripMode: "known",
+        }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok) {
-      setError(data.message);
-      return;
+      if (!response.ok) {
+        setError(data.message);
+        return;
+      }
+
+      setTrip(data.result);
+
+      router.push("/trip");
+    } catch {
+      setError("Something went wrong.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setTrip(data.result);
-
-    router.push("/trip");
-  } catch {
-    setError("Something went wrong.");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -138,12 +147,12 @@ export default function TripPlannerForm() {
         setError(data.message || "Failed to generate trip.");
         return;
       }
-     
-      // Save trip in Zustand
-     setTrip(data.result);
 
-     // Navigate to results page
-     router.push("/trip");
+      // Save trip in Zustand
+      setTrip(data.result);
+
+      // Navigate to results page
+      router.push("/trip");
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
