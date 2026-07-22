@@ -4,6 +4,7 @@ import OpenAI from "openai";
 import { buildTripPrompt } from "@/lib/ai/tripPrompt";
 import { validateTripForm } from "@/lib/validation";
 import { TripFormData } from "@/types/trip";
+import { generateMockTrip } from "@/lib/ai/mockTrip";
 
 const USE_MOCK_DATA = true;
 
@@ -33,67 +34,12 @@ export async function POST(request: Request) {
     if (USE_MOCK_DATA) {
       return NextResponse.json({
         success: true,
-        result: {
-          startingCity: formData.startingCity,
-
-          destination:
-            tripMode === "known"
-              ? formData.destination
-              : "Manali",
-
-          budget: `₹${formData.budget}`,
-
-          travelers: Number(formData.travelers),
-
-          days: Number(formData.days),
-
-          transport: "Train",
-
-          hotel: {
-            name: `Zostel ${
-              tripMode === "known"
-                ? formData.destination
-                : "Manali"
-            }`,
-            price: "₹1200/night",
-          },
-
-          itinerary: [
-            {
-              day: 1,
-              activities: [
-                "Check-in at hotel",
-                "Visit Mall Road",
-                "Enjoy local food",
-              ],
-            },
-            {
-              day: 2,
-              activities: [
-                "Solang Valley",
-                "Adventure Sports",
-                "Cafe Hopping",
-              ],
-            },
-            {
-              day: 3,
-              activities: [
-                "Shopping",
-                "Return Journey",
-              ],
-            },
-          ],
-
-          packingTips: [
-            "Power Bank",
-            "Water Bottle",
-            "Comfortable Shoes",
-            "Identity Card",
-          ],
-        },
+        result: generateMockTrip(
+          formData,
+          tripMode
+        ),
       });
     }
-
     // ---------- OPENAI RESPONSE ----------
     const prompt = buildTripPrompt(
       formData as TripFormData,

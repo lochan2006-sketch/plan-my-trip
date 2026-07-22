@@ -13,6 +13,8 @@ import Card from "../ui/Card";
 import Alert from "../ui/Alert";
 
 import { validateTripForm } from "@/lib/validation";
+import DestinationSuggestions from "./DestinationSuggestions";
+import { suggestDestinations } from "@/lib/ai/suggestDestinations";
 
 export default function TripPlannerForm() {
   const router = useRouter();
@@ -31,6 +33,9 @@ export default function TripPlannerForm() {
 
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [suggestions, setSuggestions] = useState<
+    { name: string }[]
+  >([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -40,6 +45,50 @@ export default function TripPlannerForm() {
       [name]: value,
     }));
   };
+
+  const handleDestinationSelect = async (
+  destination: string
+) => {
+  setSuggestions([]);
+
+  const updatedForm = {
+    ...formData,
+    destination,
+  };
+
+  setFormData(updatedForm);
+  setTripMode("known");
+
+  setIsSubmitting(true);
+
+  try {
+    const response = await fetch("/api/generate-trip", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        formData: updatedForm,
+        tripMode: "known",
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.message);
+      return;
+    }
+
+    setTrip(data.result);
+
+    router.push("/trip");
+  } catch {
+    setError("Something went wrong.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -56,6 +105,18 @@ export default function TripPlannerForm() {
     }
 
     setIsSubmitting(true);
+
+    if (tripMode === "suggest") {
+      const result = suggestDestinations({
+        budget: Number(formData.budget),
+        days: Number(formData.days),
+        interests: formData.interests,
+      });
+
+      setSuggestions(result);
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const response = await fetch("/api/generate-trip", {
@@ -125,6 +186,12 @@ export default function TripPlannerForm() {
 
           <SubmitButton isSubmitting={isSubmitting} />
         </form>
+        {suggestions.length > 0 && (
+          <DestinationSuggestions
+            destinations={suggestions}
+            onSelect={handleDestinationSelect}
+          />
+        )}
       </Card>
     </section>
   );

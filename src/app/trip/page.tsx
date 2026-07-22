@@ -2,11 +2,15 @@
 
 import { useTripStore } from "@/store/tripStore";
 
-import TripHeader from "@/components/trip/TripHeader";
+import TripHero from "@/components/trip/TripHero";
 import SummaryCard from "@/components/trip/SummaryCard";
 import InfoCard from "@/components/trip/InfoCard";
 import DayCard from "@/components/trip/DayCard";
 import PackingCard from "@/components/trip/PackingCard";
+import BudgetBreakdown from "@/components/trip/BudgetBreakdown";
+import TripCostSummary from "@/components/trip/TripCostSummary";
+import TravelTips from "@/components/trip/TravelTips";
+import WeatherCard from "@/components/trip/WeatherCard";
 
 export default function TripPage() {
   const { trip } = useTripStore();
@@ -30,8 +34,20 @@ export default function TripPage() {
   return (
     <main className="min-h-screen bg-gray-100 px-6 py-10">
       <div className="mx-auto max-w-6xl">
-        <TripHeader />
 
+        {/* Hero */}
+        <TripHero
+          destination={trip.destination}
+          startingCity={trip.startingCity}
+          budget={trip.budget}
+          travelers={trip.travelers}
+          days={trip.days}
+        />
+        <WeatherCard
+          destination={trip.destination}
+        />
+
+        {/* Summary */}
         <section className="rounded-2xl bg-white p-8 shadow-lg">
           <h2 className="mb-6 text-3xl font-bold">
             📍 {trip.destination}
@@ -45,8 +61,8 @@ export default function TripPage() {
             />
 
             <SummaryCard
-              title="Budget"
-              value={`₹${trip.budget}`}
+              title="Budget Per Person"
+              value={trip.budget}
               color="bg-green-50"
             />
 
@@ -64,20 +80,49 @@ export default function TripPage() {
           </div>
         </section>
 
+        <section className="mt-8 grid gap-6 lg:grid-cols-2">
+          {/* Budget */}
+          <BudgetBreakdown budget={trip.budget} />
+
+          {/* Trip Cost */}
+          <TripCostSummary
+            budget={trip.budget}
+            travelers={trip.travelers}
+          />
+        </section>
+
+        {/* Hotel & Transport */}
         <section className="mt-8 grid gap-6 md:grid-cols-2">
           <InfoCard
             emoji="🚆"
             title="Recommended Transport"
             description={trip.transport}
+            subtitle="Budget-friendly and convenient"
+            rating={4.7}
+            features={[
+              "Comfortable journey",
+              "Budget friendly",
+              "Easy booking",
+            ]}
+            buttonText="View Route"
           />
 
           <InfoCard
             emoji="🏨"
-            title="Recommended Hotel"
+            title="Recommended Stay"
             description={trip.hotel.name}
+            subtitle={trip.hotel.price}
+            rating={4.6}
+            features={[
+              "Free WiFi",
+              "Near city centre",
+              "Highly rated by travellers",
+            ]}
+            buttonText="View Details"
           />
         </section>
 
+        {/* Itinerary */}
         <section className="mt-8 rounded-2xl bg-white p-8 shadow-lg">
           <h2 className="mb-6 text-3xl font-bold">
             🗺️ Suggested Itinerary
@@ -92,9 +137,16 @@ export default function TripPage() {
               />
             ))}
           </div>
+        </section>
+
+        <section className="mt-8 grid gap-6 lg:grid-cols-2">
+          {/* Packing Checklist */}
           <PackingCard items={trip.packingTips} />
 
+          {/* Travel Tips */}
+          <TravelTips destination={trip.destination} />
         </section>
+
       </div>
     </main>
   );
