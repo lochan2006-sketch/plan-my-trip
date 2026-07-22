@@ -8,10 +8,6 @@ import { generateMockTrip } from "@/lib/ai/mockTrip";
 
 const USE_MOCK_DATA = true;
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function POST(request: Request) {
   try {
     const { formData, tripMode } = await request.json();
@@ -40,6 +36,11 @@ export async function POST(request: Request) {
         ),
       });
     }
+    // Create client only if we really need OpenAI
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    
     // ---------- OPENAI RESPONSE ----------
     const prompt = buildTripPrompt(
       formData as TripFormData,
