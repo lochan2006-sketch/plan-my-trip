@@ -6,27 +6,94 @@ import { validateTripForm } from "@/lib/validation";
 import { TripFormData } from "@/types/trip";
 import { generateMockTrip } from "@/lib/ai/mockTrip";
 
-const USE_MOCK_DATA = true;
+const RATE_LIMIT = 10;
+const RATE_WINDOW = 60 * 60 * 1000;
+
+const requests = new Map<
+  string,
+  { count: number; resetAt: number }
+>();
+
+function getClientIdentifier(request: Request) {
+  return (
+    request.headers.get("x-forwarded-for") ||
+    request.headers.get("x-real-ip") ||
+    "unknown"
+  )
+    .split(",")[0]
+    .trim();
+}
+
+function isRateLimited(identifier: string) {
+  const now = Date.now();
+  const record = requests.get(identifier);
+
+  if (!record || now > record.resetAt) {
+    requests.set(identifier, {
+      count: 1,
+      resetAt: now + RATE_WINDOW,
+    });
+
+    return false;
+  }
+
+  if (record.count >= RATE_LIMIT) {
+    return true;
+  }
+
+  record.count += 1;
+
+  return false;
+}
+const USE_MOCK_DATA =
+  process.env.USE_MOCK_DATA === "true";
 
 export async function POST(request: Request) {
   try {
-    const { formData, tripMode } = await request.json();
+    const identifier = getClientIdentifier(request);
 
-    const error = validateTripForm(formData, tripMode);
-
-    if (error) {
+    if (isRateLimited(identifier)) {
       return NextResponse.json(
         {
           success: false,
-          message: error,
+          message:
+            "Too many trip requests. Please try again later.",
         },
         {
-          status: 400,
+          status: 429,
         }
       );
     }
+    const body = await request.json();
 
-    // ---------- MOCK RESPONSE ----------
+    if (!body || typeof body !== "object") {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Invalid request.",
+        },
+        { status: 400 }
+      );
+    }
+
+    const { formData, tripMode } = body;
+
+    const validationError = validateTripForm(
+      formData,
+      tripMode
+    );
+
+    if (validationError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: validationError,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Development / testing mode
     if (USE_MOCK_DATA) {
       return NextResponse.json({
         success: true,
@@ -36,12 +103,27 @@ export async function POST(request: Request) {
         ),
       });
     }
-    // Create client only if we really need OpenAI
+
+    // Production AI mode
+    if (!process.env.OPENAI_API_KEY) {
+      console.error(
+        "OPENAI_API_KEY is not configured."
+      );
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "AI service is not configured.",
+        },
+        { status: 500 }
+      );
+    }
+
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
-    
-    // ---------- OPENAI RESPONSE ----------
+
     const prompt = buildTripPrompt(
       formData as TripFormData,
       tripMode
@@ -52,21 +134,51 @@ export async function POST(request: Request) {
       input: prompt,
     });
 
+    if (!response.output_text) {
+      throw new Error(
+        "AI returned an empty response."
+      );
+    }
+
+    let result;
+
+    try {
+      result = JSON.parse(
+        response.output_text
+      );
+    } catch {
+      console.error(
+        "Invalid JSON returned by AI:",
+        response.output_text
+      );
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "The AI returned an invalid trip. Please try again.",
+        },
+        { status: 502 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
-      result: JSON.parse(response.output_text),
+      result,
     });
   } catch (error) {
-    console.error(error);
+    console.error(
+      "Generate trip error:",
+      error
+    );
 
     return NextResponse.json(
       {
         success: false,
-        message: "Failed to generate trip.",
+        message:
+          "Failed to generate trip. Please try again.",
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }

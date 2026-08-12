@@ -1,59 +1,72 @@
+"use client";
+
+import FeatureRow from "./FeatureRow";
+
 const features = [
   {
-    title: "AI Itinerary",
+    title: "AI Trip Planning",
     description:
-      "Get a personalized day-by-day travel plan in seconds.",
-    icon: "🗺️",
+      "Create personalized itineraries in minutes based on your budget, interests, and travel style.",
+    image: "/images/illustrations/planning.svg",
+    points: [
+      "Personalized day-wise itinerary",
+      "Smart destination recommendations",
+      "Plan in under 2 minutes",
+    ],
   },
   {
-    title: "Budget Planning",
+    title: "Budget Optimization",
     description:
-      "Estimate the total trip cost before you travel.",
-    icon: "💰",
+      "Estimate trip expenses before you travel and make better decisions without overspending.",
+    image: "/images/illustrations/budget.svg",
+    reverse: true,
+    points: [
+      "Transparent budget estimates",
+      "Cost-friendly suggestions",
+      "Travel smarter",
+    ],
   },
   {
-    title: "Hotel Suggestions",
+    title: "Stay & Transport",
     description:
-      "Find accommodation that matches your budget.",
-    icon: "🏨",
+      "Discover suitable hotels and transport recommendations that match your preferences.",
+    image: "/images/illustrations/hotel.svg",
+    points: [
+      "Hotel recommendations",
+      "Transport suggestions",
+      "Convenient planning",
+    ],
   },
   {
     title: "Travel Together",
     description:
-      "Designed for college students and friend groups.",
-    icon: "👥",
+      "Designed for friends, couples, families and solo travellers with flexible planning options.",
+    image: "/images/illustrations/friends.svg",
+    reverse: true,
+    points: [
+      "Group friendly",
+      "Solo travel support",
+      "Flexible trip planning",
+    ],
   },
 ];
 
 export default function Features() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20">
-      <div className="mb-12 text-center">
-        <h2 className="text-4xl font-bold text-gray-900">
-          Why Choose PlanMyTrip?
-        </h2>
-
-        <p className="mt-4 text-gray-600">
-          Everything you need to plan an affordable trip in one place.
-        </p>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <section
+      id="features"
+      className="bg-gradient-to-b from-slate-50 to-white py-24"
+    >
+      <div className="mx-auto max-w-7xl space-y-28 px-6">
         {features.map((feature) => (
-          <div
+          <FeatureRow
             key={feature.title}
-            className="rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-lg"
-          >
-            <div className="mb-4 text-4xl">{feature.icon}</div>
-
-            <h3 className="mb-2 text-xl font-semibold">
-              {feature.title}
-            </h3>
-
-            <p className="text-gray-600">
-              {feature.description}
-            </p>
-          </div>
+            title={feature.title}
+            description={feature.description}
+            image={feature.image}
+            reverse={feature.reverse}
+            points={feature.points}
+          />
         ))}
       </div>
     </section>

@@ -1,5 +1,5 @@
 import { destinations } from "@/data/destinations";
-import { TripResponse } from "@/types/ai";
+import { Activity, TripResponse } from "@/types/ai";
 import { TripFormData } from "@/types/trip";
 
 export function generateMockTrip(
@@ -53,7 +53,6 @@ export function generateMockTrip(
   }
 
   // Remove duplicates
-
   activities = [...new Set(activities)];
 
   // -------- Day-wise Itinerary --------
@@ -63,18 +62,30 @@ export function generateMockTrip(
   for (let day = 1; day <= days; day++) {
     const start = (day - 1) * 2;
 
-    const dayActivities = [];
+    const dayActivities: Activity[] = [];
 
     if (day === 1) {
-      dayActivities.push("Check-in at hotel");
+      dayActivities.push({
+        title: "Check-in at hotel",
+      });
     }
 
-    dayActivities.push(...activities.slice(start, start + 2));
+    dayActivities.push(
+      ...activities
+        .slice(start, start + 2)
+        .map((activity) => ({
+          title: activity,
+        }))
+    );
 
-    dayActivities.push("Enjoy local cuisine");
+    dayActivities.push({
+      title: "Enjoy local cuisine",
+    });
 
     if (day === days) {
-      dayActivities.push("Return Journey");
+      dayActivities.push({
+        title: "Return Journey",
+      });
     }
 
     itinerary.push({

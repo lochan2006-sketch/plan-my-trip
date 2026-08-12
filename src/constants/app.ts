@@ -1,4 +1,4 @@
-export const APP_NAME = "PlanMyTrip";
+export const APP_NAME = "ATLAS";
 
 export const APP_TAGLINE =
   "Plan smarter. Travel better.";

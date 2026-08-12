@@ -15,6 +15,8 @@ import Alert from "../ui/Alert";
 import { validateTripForm } from "@/lib/validation";
 import DestinationSuggestions from "./DestinationSuggestions";
 import { suggestDestinations } from "@/lib/ai/suggestDestinations";
+import AIPlanningLoader from "@/components/loading/AIPlanningLoader";
+import { toast } from "sonner";
 
 export default function TripPlannerForm() {
   const router = useRouter();
@@ -33,6 +35,7 @@ export default function TripPlannerForm() {
 
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
   type SuggestedDestination = {
     name: string;
     image: string;
@@ -91,8 +94,13 @@ export default function TripPlannerForm() {
 
       setTrip(data.result);
 
-      router.push("/trip");
+      setShowLoader(true);
+
+      setTimeout(() => {
+        router.push("/trip");
+      }, 3200);
     } catch {
+      setShowLoader(false);
       setError("Something went wrong.");
     } finally {
       setIsSubmitting(false);
@@ -151,31 +159,51 @@ export default function TripPlannerForm() {
       // Save trip in Zustand
       setTrip(data.result);
 
+      setShowLoader(true);
+
       // Navigate to results page
-      router.push("/trip");
+      setTimeout(() => {
+        router.push("/trip");
+      }, 3200);
     } catch {
-      setError("Something went wrong. Please try again.");
+      setShowLoader(false);
+      toast.error("Trip generation failed", {
+        description: "Please try again.",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
+  if (showLoader) {
+    return <AIPlanningLoader />;
+  }
 
   return (
-    <section className="mx-auto max-w-4xl">
-      <Card>
-        <h2 className="mb-2 text-3xl font-bold text-gray-900">
-          Plan Your Trip
-        </h2>
+    <section
+      id="planner"
+      className="mx-auto max-w-5xl scroll-mt-24">
 
-        <p className="mb-8 text-gray-600">
-          Fill in a few details and let AI create your perfect trip.
+      <div className="mb-8 text-center">
+        <p className="text-sm font-bold uppercase tracking-[0.25em] text-indigo-600">
+          Plan Your Journey
         </p>
 
+        <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-gray-900 md:text-5xl">
+          Your next adventure starts here.
+        </h2>
+
+        <p className="mx-auto mt-4 max-w-2xl text-lg leading-8 text-gray-600">
+          Tell ATLAS a little about your trip and we'll create a
+          personalized itinerary around your budget and interests.
+        </p>
+      </div>
+      <Card className="rounded-[2rem] border border-gray-100 shadow-xl shadow-indigo-100/40">
+      
         {error && <Alert>{error}</Alert>}
 
         <form
           onSubmit={handleSubmit}
-          className="grid gap-6 md:grid-cols-2"
+          className="grid gap-7 md:grid-cols-2"
         >
           <TripMode
             tripMode={tripMode}

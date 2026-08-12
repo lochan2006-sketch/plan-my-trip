@@ -1,6 +1,14 @@
 export type DestinationData = {
   name: string;
+  slug: string;
+
+  tagline: string;
+
+  description: string;
+
   image: string;
+
+  gallery: string[];
 
   rating: number;
 
@@ -18,56 +26,94 @@ export type DestinationData = {
   };
 
   attractions: string[];
+
   adventure: string[];
+
   food: string[];
+
   packing: string[];
 };
 
 export const destinations: Record<string, DestinationData> = {
   manali: {
     name: "Manali",
-    image: "/images/destinations/manali.jpg",
+
+    slug: "manali",
+
+    tagline: "Adventure Paradise",
+
+    description:
+      "Snow-covered mountains, beautiful valleys and exciting adventure sports make Manali one of India's favourite travel destinations.",
+
+    image: "/images/destinations/manali/hero.jpg",
+
+    gallery: [
+      "/images/destinations/manali/hero.jpg",
+      "/images/destinations/manali/attraction-1.jpg",
+      "/images/destinations/manali/attraction-2.jpg",
+      "/images/destinations/manali/food.jpg",
+    ],
+
     transport: "Volvo Bus",
+
     hotel: {
       name: "Zostel Manali",
       price: "₹1200/night",
     },
+
     attractions: [
       "Hadimba Temple",
       "Mall Road",
       "Old Manali",
       "Vashisht Temple",
     ],
+
     adventure: [
       "Paragliding",
       "River Rafting",
       "ATV Ride",
       "Solang Valley",
     ],
+
     food: [
       "Siddu",
       "Trout Fish",
       "Local Cafés",
       "Tibetan Momos",
     ],
+
     packing: [
       "Jacket",
       "Gloves",
       "Power Bank",
       "Comfortable Shoes",
     ],
+
     rating: 4.8,
 
-budgetRange: "₹7000 - ₹12000",
+    budgetRange: "₹7000 - ₹12000",
 
-bestFor: "Adventure",
+    bestFor: "Adventure",
 
-bestSeason: "March - June",
+    bestSeason: "March - June",
   },
 
   goa: {
+
     name: "Goa",
-    image: "/images/destinations/goa.jpg",
+    slug: "goa",
+    tagline: "Beach Paradise",
+    description:
+      "Golden beaches, vibrant nightlife and thrilling water sports make Goa India's favourite beach destination.",
+
+    image: "/images/destinations/goa/hero.jpg",
+
+    gallery: [
+      "/images/destinations/goa/hero.jpg",
+      "/images/destinations/goa/attraction-1.jpg",
+      "/images/destinations/goa/attraction-2.jpg",
+      "/images/destinations/goa/food.jpg",
+    ],
     transport: "Flight",
     hotel: {
       name: "Zostel Goa",
@@ -99,16 +145,29 @@ bestSeason: "March - June",
     ],
     rating: 4.9,
 
-budgetRange: "₹9000 - ₹15000",
+    budgetRange: "₹9000 - ₹15000",
 
-bestFor: "Beaches",
+    bestFor: "Beaches",
 
-bestSeason: "November - February",
+    bestSeason: "November - February",
   },
 
   jaipur: {
     name: "Jaipur",
-    image: "/images/destinations/jaipur.jpg",
+    slug: "jaipur",
+
+    tagline: "Royal Heritage",
+
+    description:
+      "Explore majestic forts, colourful markets and the royal history of Rajasthan.",
+
+    image: "/images/destinations/jaipur/hero.jpg",
+    gallery: [
+      "/images/destinations/jaipur/hero.jpg",
+      "/images/destinations/jaipur/attraction-1.jpg",
+      "/images/destinations/jaipur/attraction-2.jpg",
+      "/images/destinations/jaipur/food.jpg",
+    ],
     transport: "Train",
     hotel: {
       name: "Zostel Jaipur",
@@ -136,16 +195,29 @@ bestSeason: "November - February",
     ],
     rating: 4.7,
 
-budgetRange: "₹6000 - ₹10000",
+    budgetRange: "₹6000 - ₹10000",
 
-bestFor: "History",
+    bestFor: "History",
 
-bestSeason: "October - March",
+    bestSeason: "October - March",
   },
 
   rishikesh: {
     name: "Rishikesh",
-    image: "/images/destinations/rishikesh.jpg",
+    slug: "rishikesh",
+
+    tagline: "Yoga & Adventure",
+
+    description:
+      "Experience river rafting, yoga, camping and the peaceful banks of the Ganges.",
+
+    image: "/images/destinations/rishikesh/hero.jpg",
+    gallery: [
+      "/images/destinations/rishikesh/hero.jpg",
+      "/images/destinations/rishikesh/attraction-1.jpg",
+      "/images/destinations/rishikesh/attraction-2.jpg",
+      "/images/destinations/rishikesh/food.jpg",
+    ],
     transport: "Bus",
     hotel: {
       name: "Live Free Hostel",
@@ -172,16 +244,29 @@ bestSeason: "October - March",
     ],
     rating: 4.8,
 
-budgetRange: "₹5000 - ₹9000",
+    budgetRange: "₹5000 - ₹9000",
 
-bestFor: "Adventure",
+    bestFor: "Adventure",
 
-bestSeason: "September - April",
+    bestSeason: "September - April",
   },
 
   udaipur: {
     name: "Udaipur",
-     image: "/images/destinations/udaipur.jpg",
+    slug: "udaipur",
+
+    tagline: "City of Lakes",
+
+    description:
+      "Beautiful lakes, royal palaces and romantic sunsets make Udaipur unforgettable.",
+
+    image: "/images/destinations/udaipur/hero.jpg",
+    gallery: [
+      "/images/destinations/udaipur/hero.jpg",
+      "/images/destinations/udaipur/attraction-1.jpg",
+      "/images/destinations/udaipur/attraction-2.jpg",
+      "/images/destinations/udaipur/food.jpg",
+    ],
 
     transport: "Train",
     hotel: {
@@ -209,10 +294,10 @@ bestSeason: "September - April",
     ],
     rating: 4.8,
 
-budgetRange: "₹7000 - ₹11000",
+    budgetRange: "₹7000 - ₹11000",
 
-bestFor: "Lakes",
+    bestFor: "Lakes",
 
-bestSeason: "October - March",
+    bestSeason: "October - March",
   },
 };

@@ -1,4 +1,14 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "framer-motion";
+import {
+  Star,
+  Wallet,
+  CalendarDays,
+  Compass,
+  ArrowRight,
+} from "lucide-react";
 
 type DestinationCardProps = {
   name: string;
@@ -22,44 +32,81 @@ export default function DestinationCard({
   onSelect,
 }: DestinationCardProps) {
   return (
-    <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-lg transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
-      <div className="relative h-56 w-full">
+    <motion.div
+      whileHover={{ y: -8 }}
+      transition={{ duration: 0.25 }}
+      className="group overflow-hidden rounded-3xl bg-white shadow-lg transition-all"
+    >
+      <div className="relative h-64 overflow-hidden">
         <Image
           src={image}
           alt={name}
           fill
-          className="object-cover"
+          className="object-cover transition duration-500 group-hover:scale-110"
         />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+        <div className="absolute bottom-5 left-5 text-white">
+          <h3 className="text-3xl font-bold">
+            {name}
+          </h3>
+
+          <div className="mt-2 flex items-center gap-2">
+            <Star
+              size={16}
+              className="fill-yellow-400 text-yellow-400"
+            />
+
+            <span className="font-medium">
+              {rating}
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="p-6">
-        <h3 className="text-2xl font-bold">
-          {name}
-        </h3>
-
-        <p className="mt-2 font-semibold text-yellow-500">
-          ⭐ {rating}
-        </p>
-
-        <p className="mt-3 text-gray-600">
+      <div className="space-y-5 p-6">
+        <p className="text-gray-600">
           {description}
         </p>
 
-        <div className="mt-4 space-y-2 text-sm text-gray-700">
-          <p>💰 {budgetRange}</p>
+        <div className="space-y-3 text-sm text-gray-700">
 
-          <p>🎯 Best For: {bestFor}</p>
+          <div className="flex items-center gap-3">
+            <Wallet
+              size={18}
+              className="text-indigo-600"
+            />
+            <span>{budgetRange}</span>
+          </div>
 
-          <p>🌤 Best Season: {bestSeason}</p>
+          <div className="flex items-center gap-3">
+            <Compass
+              size={18}
+              className="text-indigo-600"
+            />
+            <span>{bestFor}</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <CalendarDays
+              size={18}
+              className="text-indigo-600"
+            />
+            <span>{bestSeason}</span>
+          </div>
+
         </div>
 
         <button
           onClick={onSelect}
-          className="mt-6 w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white transition hover:bg-indigo-700"
+          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-3 font-semibold text-white transition hover:bg-indigo-700"
         >
-          Choose Destination
+          Explore Destination
+
+          <ArrowRight size={18} />
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

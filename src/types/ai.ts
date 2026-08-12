@@ -1,6 +1,14 @@
+export interface Activity {
+  title: string;
+  time?: string;
+  location?: string;
+  duration?: string;
+  cost?: string;
+}
+
 export interface ItineraryDay {
   day: number;
-  activities: string[];
+  activities: Activity[];
 }
 
 export interface Hotel {

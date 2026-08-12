@@ -33,7 +33,7 @@ export default function Input({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="w-full rounded-lg border border-gray-300 p-3 transition focus:border-indigo-500 focus:outline-none"
+        className="w-full rounded-lg border border-gray-300 p-3 text-gray-900 placeholder:text-gray-500 transition focus:border-indigo-500 focus:outline-none"
       />
     </div>
   );
