@@ -77,6 +77,8 @@ export const useTripStore = create<TripStore>((set, get) => ({
   },
 
   saveCurrentTrip: () => {
+    if (typeof window === "undefined") return;
+
     const current = get().trip;
 
     if (!current) return;

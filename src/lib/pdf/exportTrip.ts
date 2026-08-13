@@ -4,121 +4,334 @@ import { TripResponse } from "@/types/ai";
 export function exportTripPDF(trip: TripResponse) {
   const doc = new jsPDF();
 
-  // Title
-  doc.setFontSize(24);
+  const left = 20;
+  const contentWidth = 170;
+  const pageBottom = 275;
+
+  let y = 20;
+
+  // -----------------------------
+  // Helpers
+  // -----------------------------
+
+  const checkPage = (spaceNeeded = 15) => {
+    if (y + spaceNeeded > pageBottom) {
+      doc.addPage();
+      y = 20;
+    }
+  };
+
+  const addWrappedText = (
+    text: string,
+    x: number,
+    fontSize = 11,
+    maxWidth = contentWidth
+  ) => {
+    doc.setFontSize(fontSize);
+
+    const lines = doc.splitTextToSize(
+      text,
+      maxWidth
+    );
+
+    lines.forEach((line: string) => {
+      checkPage(7);
+
+      doc.text(line, x, y);
+      y += 6;
+    });
+  };
+
+  const addSectionTitle = (title: string) => {
+    checkPage(20);
+
+    y += 4;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(17);
+    doc.setTextColor(79, 70, 229);
+
+    doc.text(title, left, y);
+
+    y += 10;
+  };
+
+  // -----------------------------
+  // Header
+  // -----------------------------
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(25);
   doc.setTextColor(79, 70, 229);
-  doc.text("ATLAS", 20, 20);
 
-  doc.setFontSize(12);
-  doc.setTextColor(100);
-  doc.text("Travel Smarter with AI", 20, 28);
-
-  // Divider
-  doc.setDrawColor(220);
-  doc.line(20, 35, 190, 35);
-
-  let y = 48;
-
-  doc.setFontSize(16);
-  doc.setTextColor(30);
-
-  doc.text(`Destination: ${trip.destination}`, 20, y);
-
-  y += 10;
-
-  doc.text(`Starting City: ${trip.startingCity}`, 20, y);
-
-  y += 10;
-
-  doc.text(`Budget: ${trip.budget}`, 20, y);
-
-  y += 10;
-
-  doc.text(`Travelers: ${trip.travelers}`, 20, y);
-
-  y += 10;
-
-  doc.text(`Duration: ${trip.days} Days`, 20, y);
-
-  y += 20;
-
-  doc.setFontSize(18);
-  doc.setTextColor(79, 70, 229);
-  doc.text("Recommended Stay", 20, y);
-
-  y += 10;
-
-  doc.setFontSize(14);
-  doc.setTextColor(50);
-
-  doc.text(trip.hotel.name, 20, y);
+  doc.text("ATLAS", left, y);
 
   y += 8;
 
-  doc.text(trip.hotel.price, 20, y);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  doc.setTextColor(100);
 
-  y += 18;
+  doc.text(
+    "Travel Smarter with AI",
+    left,
+    y
+  );
 
-  doc.setFontSize(18);
-  doc.setTextColor(79, 70, 229);
+  y += 8;
 
-  doc.text("Transport", 20, y);
+  doc.setDrawColor(220);
+  doc.line(left, y, 190, y);
 
-  y += 10;
+  y += 13;
 
-  doc.setFontSize(14);
-  doc.setTextColor(50);
-
-  doc.text(trip.transport, 20, y);
-
-  y += 20;
-
-  doc.setFontSize(18);
-  doc.setTextColor(79, 70, 229);
-
-  doc.text("Itinerary", 20, y);
-
-  y += 12;
-
-  doc.setFontSize(13);
-  doc.setTextColor(40);
-
-  trip.itinerary.forEach((day) => {
-    doc.setFont("helvetica", "bold");
-
-    doc.text(`Day ${day.day}`, 20, y);
-
-    y += 8;
-
-    doc.setFont("helvetica", "normal");
-
-    day.activities.forEach((activity) => {
-      doc.text(`• ${activity}`, 28, y);
-
-      y += 7;
-    });
-
-    y += 6;
-  });
+  // -----------------------------
+  // Trip Summary
+  // -----------------------------
 
   doc.setFont("helvetica", "bold");
+  doc.setFontSize(19);
+  doc.setTextColor(30);
 
-  doc.setFontSize(18);
-  doc.setTextColor(79, 70, 229);
+  addWrappedText(
+    trip.destination,
+    left,
+    19
+  );
 
-  doc.text("Packing Checklist", 20, y);
+  y += 2;
 
-  y += 10;
-
-  doc.setFontSize(13);
   doc.setFont("helvetica", "normal");
+  doc.setTextColor(70);
+
+  addWrappedText(
+    `Starting City: ${trip.startingCity}`,
+    left
+  );
+
+  addWrappedText(
+    `Budget / Person: ${trip.budget}`,
+    left
+  );
+
+  addWrappedText(
+    `Travelers: ${trip.travelers}`,
+    left
+  );
+
+  addWrappedText(
+    `Duration: ${trip.days} Days`,
+    left
+  );
+
+  // -----------------------------
+  // Hotel
+  // -----------------------------
+
+  addSectionTitle("Recommended Stay");
+
+  doc.setFont("helvetica", "bold");
   doc.setTextColor(40);
 
-  trip.packingTips.forEach((item) => {
-    doc.text(`✓ ${item}`, 25, y);
+  addWrappedText(
+    trip.hotel.name,
+    left
+  );
 
-    y += 7;
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(90);
+
+  addWrappedText(
+    trip.hotel.price,
+    left
+  );
+
+  // -----------------------------
+  // Transport
+  // -----------------------------
+
+  addSectionTitle("Recommended Transport");
+
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(50);
+
+  addWrappedText(
+    trip.transport,
+    left
+  );
+
+  // -----------------------------
+  // Itinerary
+  // -----------------------------
+
+  addSectionTitle("Your Itinerary");
+
+  trip.itinerary.forEach((day) => {
+    checkPage(25);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(15);
+    doc.setTextColor(79, 70, 229);
+
+    doc.text(
+      `Day ${day.day}`,
+      left,
+      y
+    );
+
+    y += 9;
+
+    day.activities.forEach(
+      (activity, index) => {
+        checkPage(30);
+
+        // Activity number + title
+        doc.setFont(
+          "helvetica",
+          "bold"
+        );
+        doc.setFontSize(12);
+        doc.setTextColor(35);
+
+        addWrappedText(
+          `${index + 1}. ${activity.title}`,
+          left + 5,
+          12,
+          160
+        );
+
+        doc.setFont(
+          "helvetica",
+          "normal"
+        );
+        doc.setTextColor(90);
+
+        if (activity.time) {
+          addWrappedText(
+            `Time: ${activity.time}`,
+            left + 10,
+            10,
+            155
+          );
+        }
+
+        if (activity.location) {
+          addWrappedText(
+            `Location: ${activity.location}`,
+            left + 10,
+            10,
+            155
+          );
+        }
+
+        if (activity.duration) {
+          addWrappedText(
+            `Duration: ${activity.duration}`,
+            left + 10,
+            10,
+            155
+          );
+        }
+
+        if (activity.cost) {
+          addWrappedText(
+            `Estimated Cost: ${activity.cost}`,
+            left + 10,
+            10,
+            155
+          );
+        }
+
+        y += 4;
+      }
+    );
+
+    y += 5;
   });
 
-  doc.save(`${trip.destination}-Trip.pdf`);
+  // -----------------------------
+  // Packing
+  // -----------------------------
+
+  addSectionTitle("Packing Checklist");
+
+  doc.setFont(
+    "helvetica",
+    "normal"
+  );
+  doc.setTextColor(50);
+
+  trip.packingTips.forEach(
+    (item) => {
+      checkPage(10);
+
+      addWrappedText(
+        `- ${item}`,
+        left + 5,
+        11,
+        160
+      );
+    }
+  );
+
+  // -----------------------------
+  // Footer on every page
+  // -----------------------------
+
+  const totalPages =
+    doc.getNumberOfPages();
+
+  for (
+    let page = 1;
+    page <= totalPages;
+    page++
+  ) {
+    doc.setPage(page);
+
+    doc.setDrawColor(230);
+    doc.line(
+      left,
+      285,
+      190,
+      285
+    );
+
+    doc.setFont(
+      "helvetica",
+      "normal"
+    );
+    doc.setFontSize(9);
+    doc.setTextColor(140);
+
+    doc.text(
+      "Generated by ATLAS - Travel Smarter with AI",
+      left,
+      291
+    );
+
+    doc.text(
+      `Page ${page} of ${totalPages}`,
+      190,
+      291,
+      {
+        align: "right",
+      }
+    );
+  }
+
+  // -----------------------------
+  // Download
+  // -----------------------------
+
+  const safeDestination =
+    trip.destination
+      .replace(
+        /[^a-z0-9]/gi,
+        "-"
+      )
+      .replace(/-+/g, "-");
+
+  doc.save(
+    `${safeDestination}-ATLAS-Trip.pdf`
+  );
 }

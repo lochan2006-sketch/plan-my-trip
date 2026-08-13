@@ -147,9 +147,32 @@ export async function POST(request: Request) {
         response.output_text
       );
     } catch {
+
+      if (
+        !result ||
+        typeof result !== "object" ||
+        typeof result.destination !== "string" ||
+        typeof result.startingCity !== "string" ||
+        !Array.isArray(result.itinerary) ||
+        !Array.isArray(result.packingTips) ||
+        !result.hotel ||
+        typeof result.hotel !== "object"
+      ) {
+        console.error(
+          "AI returned an invalid trip structure."
+        );
+
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "The AI returned an incomplete trip. Please try again.",
+          },
+          { status: 502 }
+        );
+      }
       console.error(
         "Invalid JSON returned by AI:",
-        response.output_text
       );
 
       return NextResponse.json(

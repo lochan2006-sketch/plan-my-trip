@@ -13,17 +13,29 @@ import BudgetBreakdown from "@/components/trip/BudgetBreakdown";
 import TripCostSummary from "@/components/trip/TripCostSummary";
 import TravelTips from "@/components/trip/TravelTips";
 import WeatherCard from "@/components/trip/WeatherCard";
-
+import TripCTA from "@/components/trip/TripCTA";
 
 export default function TripPage() {
   const {
     trip,
+    savedTrips,
     loadTrip,
+    loadSavedTrips,
+    saveCurrentTrip,
   } = useTripStore();
+
+  const isSaved = trip
+    ? savedTrips.some(
+      (savedTrip) =>
+        savedTrip.destination === trip.destination &&
+        savedTrip.startingCity === trip.startingCity
+    )
+    : false;
 
   useEffect(() => {
     loadTrip();
-  }, [loadTrip]);
+    loadSavedTrips();
+  }, [loadTrip, loadSavedTrips]);
 
   if (!trip) {
     return (
@@ -254,7 +266,11 @@ export default function TripPage() {
             FINAL CTA
         ====================================================== */}
 
-
+        <TripCTA
+          trip={trip}
+          onSave={saveCurrentTrip}
+          isSaved={isSaved}
+        />
 
       </div>
     </main>
