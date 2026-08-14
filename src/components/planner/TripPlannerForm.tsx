@@ -18,6 +18,7 @@ import DestinationSuggestions from "./DestinationSuggestions";
 import { suggestDestinations } from "@/lib/ai/suggestDestinations";
 import AIPlanningLoader from "@/components/loading/AIPlanningLoader";
 import { toast } from "sonner";
+import { track } from "@vercel/analytics";
 
 type SuggestedDestination = {
   name: string;
@@ -103,12 +104,18 @@ export default function TripPlannerForm() {
       if (!response.ok) {
         setError(
           data.message ||
-            "Failed to generate trip."
+          "Failed to generate trip."
         );
         return;
       }
 
       setTrip(data.result);
+
+      track("trip_generated", {
+        destination: data.result.destination,
+        travelers: String(data.result.travelers),
+        days: String(data.result.days),
+      });
 
       router.push("/trip");
     } catch {
@@ -201,7 +208,7 @@ export default function TripPlannerForm() {
       if (!response.ok) {
         setError(
           data.message ||
-            "Failed to generate trip."
+          "Failed to generate trip."
         );
         return;
       }
@@ -214,6 +221,12 @@ export default function TripPlannerForm() {
       }
 
       setTrip(data.result);
+
+      track("trip_generated", {
+        destination: data.result.destination,
+        travelers: String(data.result.travelers),
+        days: String(data.result.days),
+      });
 
       router.push("/trip");
     } catch {

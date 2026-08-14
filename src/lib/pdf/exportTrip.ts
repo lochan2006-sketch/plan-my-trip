@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import { TripResponse } from "@/types/ai";
+import { track } from "@vercel/analytics";
 
 export function exportTripPDF(trip: TripResponse) {
   const doc = new jsPDF();
@@ -330,6 +331,11 @@ export function exportTripPDF(trip: TripResponse) {
         "-"
       )
       .replace(/-+/g, "-");
+
+  track("pdf_downloaded", {
+    destination: trip.destination,
+    days: String(trip.days),
+  });
 
   doc.save(
     `${safeDestination}-ATLAS-Trip.pdf`
